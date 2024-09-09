@@ -1,0 +1,23 @@
+{
+  "name": "playwright-api-test",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@playwright/test": "^1.47.0",
+    "@types/node": "^22.5.4"
+  },
+  "scripts": {
+    "Run-Playwright-Tests": "npx playwright test",
+    "Show-Report": "npx playwright show-report",
+    "Start-Interactive-UI": "npx playwright test --ui",
+    "Run-In-Chrome": "npx playwright test --project=chromium",
+
+    "Run-Debug": "npx playwright test --debug",
+    "Run-Codegen": "npx playwright codegen"
+}
+}
