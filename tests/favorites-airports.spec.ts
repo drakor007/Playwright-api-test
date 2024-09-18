@@ -1,22 +1,21 @@
 const { test, expect } = require("@playwright/test");
+import { USER } from "../test-data/users";
+import { STATUS } from "../test-data/status";
+import { LINK } from "../test-data/links";
 
 test.describe.serial("Test Favorite Airports on test API", () => {
-  const USER = {
-    token: "i6D129vkuYbbYpzxffafu9CP",
-  };
-
   let first_airport_id: string;
   let second_airport_id: string;
   const log_enabled = false;
 
   test("GET Check existing Airports", async ({ request }) => {
-    const res = await request.get("https://airportgap.com/api/airports", {
+    const res = await request.get(LINK.existingsAirports, {
       headers: {
         Authorization: `Bearer ${USER.token}`,
         "Content-Type": "application/json",
       },
     });
-    expect(res.status()).toBe(200);
+    expect(res.status()).toBe(STATUS.OK);
     const response_data = await res.json();
     first_airport_id = response_data.data[0].id;
     second_airport_id = response_data.data[1].id;
@@ -28,7 +27,7 @@ test.describe.serial("Test Favorite Airports on test API", () => {
   });
 
   test("POST Add First Airport to the favorites", async ({ request }) => {
-    const res = await request.post("https://airportgap.com/api/favorites", {
+    const res = await request.post(LINK.favoritesAirports, {
       headers: {
         Authorization: `Bearer ${USER.token}`,
         "Content-Type": "application/json",
@@ -38,7 +37,7 @@ test.describe.serial("Test Favorite Airports on test API", () => {
         note: "My usual layover when visiting family",
       },
     });
-    expect(res.status()).toBe(201);
+    expect(res.status()).toBe(STATUS.Created);
     const response_data = await res.json();
     if (log_enabled) {
       console.log(
@@ -49,7 +48,7 @@ test.describe.serial("Test Favorite Airports on test API", () => {
   });
 
   test("POST Add Second Airport to the favorites", async ({ request }) => {
-    const res = await request.post("https://airportgap.com/api/favorites", {
+    const res = await request.post(LINK.favoritesAirports, {
       headers: {
         Authorization: `Bearer ${USER.token}`,
         "Content-Type": "application/json",
@@ -59,7 +58,7 @@ test.describe.serial("Test Favorite Airports on test API", () => {
         note: "My usual layover when visiting family",
       },
     });
-    expect(res.status()).toBe(201);
+    expect(res.status()).toBe(STATUS.Created);
     const response_data = await res.json();
     if (log_enabled) {
       console.log(
@@ -70,13 +69,13 @@ test.describe.serial("Test Favorite Airports on test API", () => {
   });
 
   test("GET Check Added Airports", async ({ request }) => {
-    const res = await request.get("https://airportgap.com/api/favorites", {
+    const res = await request.get(LINK.favoritesAirports, {
       headers: {
         Authorization: `Bearer ${USER.token}`,
         "Content-Type": "application/json",
       },
     });
-    expect(res.status()).toBe(200);
+    expect(res.status()).toBe(STATUS.OK);
     const response_data = await res.json();
     // check the corect Airports iata codes in favorites
     expect(response_data.data[0].attributes.airport.iata).toBe(
@@ -99,28 +98,25 @@ test.describe.serial("Test Favorite Airports on test API", () => {
   });
 
   test("DELETE Delete Favorites Airports", async ({ request }) => {
-    const res = await request.delete(
-      "https://airportgap.com/api/favorites/clear_all",
-      {
-        headers: {
-          Authorization: `Bearer ${USER.token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    expect(res.status()).toBe(204);
-  });
-
-  test("GET Check and validate if favorites airports are deleted", async ({
-    request,
-  }) => {
-    const res = await request.get("https://airportgap.com/api/favorites", {
+    const res = await request.delete(LINK.clearAllFavorites, {
       headers: {
         Authorization: `Bearer ${USER.token}`,
         "Content-Type": "application/json",
       },
     });
-    expect(res.status()).toBe(200);
+    expect(res.status()).toBe(STATUS.NoContent);
+  });
+
+  test("GET Check and validate if favorites airports are deleted", async ({
+    request,
+  }) => {
+    const res = await request.get(LINK.favoritesAirports, {
+      headers: {
+        Authorization: `Bearer ${USER.token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    expect(res.status()).toBe(STATUS.OK);
     const response_data = await res.json();
     // check if favorites airports are deleted
     expect(response_data.data).toStrictEqual([]);
